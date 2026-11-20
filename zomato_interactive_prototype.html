@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zomato UX Improvements – Interactive Prototype</title>
+<style>
+:root{font-family:Arial,sans-serif;color:#292d35;background:#f5f6f8}*{box-sizing:border-box}
+body{margin:0;padding:22px 12px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.wrap{width:min(100%,440px)}.intro{font-size:14px;color:#68707c;margin-bottom:10px}
+.phone{border:1px solid #dfe3e8;border-radius:26px;overflow:hidden;background:white;box-shadow:0 8px 30px #0001}
+.top{background:#e5232e;color:white;padding:16px 19px;display:flex;justify-content:space-between;align-items:center}
+.brand{font-size:27px;font-weight:900;letter-spacing:-1px}.screen{padding:18px;min-height:510px}
+.muted{color:#727985}.card{border:1px solid #e0e3e8;border-radius:14px;padding:13px;margin:10px 0;background:#fff}
+.primary{background:#e5232e;color:white;border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}
+.secondary,.tab{background:white;border:1px solid #dfe3e8;border-radius:9px;padding:9px 13px;font-weight:600;cursor:pointer}
+.tab{border-radius:20px;font-size:12px}.tab.active{background:#e5232e;color:white;border-color:#e5232e}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #e2e5e9;padding:10px 4px}
+.nav button{border:0;background:none;color:#727985;font-size:11px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav button.active{color:#e5232e;font-weight:bold}.nav span{font-size:20px}
+.foodpic{width:65px;height:60px;border-radius:10px;background:#f7e8d4;display:grid;place-items:center;font-size:32px;flex-shrink:0}
+.row{display:flex;align-items:center;gap:12px}.grow{flex:1;min-width:0}.title{font-size:20px;font-weight:800}.section{font-size:18px;font-weight:800;margin:17px 0 8px}
+.notice{font-size:12px;color:#626b77;background:#f5f6f8;padding:10px;border-radius:9px;margin-top:12px}
+.controls{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}.status{font-size:12px;color:#68707c;min-height:18px}
+@media(min-width:700px){body{padding-top:30px}.phone{max-width:420px}}
+</style></head>
+<body>
+<div class="wrap">
+<h2 style="margin:0 0 5px">Zomato – UX improvement prototype</h2>
+<div class="intro">Interactive demonstration of the five proposed usability improvements. Use the tabs or the app navigation to explore.</div>
+<div class="phone">
+<header class="top"><div class="brand">zomato</div><small>Delivering to Home⌄</small></header>
+<main class="screen" id="screen"></main>
+<nav class="nav">
+<button data-screen="home" class="active"><span>⌂</span>Home</button>
+<button data-screen="search"><span>⌕</span>Search</button>
+<button data-screen="cart"><span>▣</span>Cart</button>
+<button data-screen="help"><span>ⓘ</span>Help</button>
+</nav></div>
+<div class="controls" style="margin-top:12px">
+<button class="tab active" data-screen="home">1. Home</button><button class="tab" data-screen="search">2. Search</button>
+<button class="tab" data-screen="recommend">3. Recommendations</button><button class="tab" data-screen="cart">4. Cart</button><button class="tab" data-screen="help">5. Help</button>
+</div>
+<div class="status" id="status" aria-live="polite">Prototype ready.</div>
+<div style="text-align:center;margin-top:5px"><button class="secondary" id="reset">↻ Reset demonstration</button></div>
+</div>
+<script>
+(()=>{
+const screen=document.getElementById('screen'),status=document.getElementById('status');
+let current='home',offer=false,removed=false,category='Top Rated',helpChoice='';
+const pasta=[['Creamy White Sauce Pasta','Penne • White sauce','₹249'],['Classic Alfredo Pasta','Spaghetti • White sauce','₹279'],['Mushroom White Sauce Pasta','Penne • White sauce','₹269'],['Cheesy White Sauce Pasta','Fusilli • White sauce','₹259']];
+const card=(p,i)=>`<div class="card row"><div class="foodpic">🍝</div><div class="grow"><b style="font-size:14px">${p[0]}</b><div class="muted" style="font-size:12px;margin-top:5px">${p[1]}</div><b style="display:block;margin-top:7px">${p[2]}</b></div><button class="primary add" data-i="${i}" style="font-size:12px">Add</button></div>`;
+function go(s){current=s;draw()}
+function draw(){
+document.querySelectorAll('[data-screen]').forEach(b=>b.classList.toggle('active',b.dataset.screen===current));
+let h='';
+if(current==='home')h=`<div class="title">Discover food</div><div class="muted" style="font-size:12px;margin-top:5px">A simpler, easier-to-scan home page</div><div class="section">Categories</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${['Food','Dining','Offers','Healthy options'].map((x,i)=>`<div class="card" style="margin:0;text-align:center"><div style="font-size:30px">${['🍴','🍽️','🏷️','🥗'][i]}</div><b style="font-size:13px">${x}</b></div>`).join('')}</div><div class="section">More to explore</div><div class="card"><b>Popular choices</b><div class="muted" style="font-size:12px;margin-top:5px">Explore available food options</div></div><div class="card"><b>Restaurants</b><div class="muted" style="font-size:12px;margin-top:5px">Browse restaurant options</div></div><div class="notice">Related categories are grouped together with clear headings and spacing.</div>`;
+if(current==='search')h=`<div class="title">Search</div><div class="card" style="margin-top:15px">⌕ &nbsp; <input aria-label="Search" value="white sauce pasta" style="border:0;outline:0;font-size:14px;width:85%"></div><b>Results for white sauce pasta</b><div class="muted" style="font-size:12px;margin:5px 0">Showing relevant pasta options</div>${pasta.map(card).join('')}<div class="notice">Unrelated items such as pizza, dal and cakes are excluded from these search results.</div>`;
+if(current==='recommend'){let groups={'Top Rated':[['Creamy White Sauce Pasta','Highly rated option','₹249'],['Mushroom Pasta','Highly rated option','₹269']],'Best Selling':[['Classic White Sauce Pasta','Popular choice','₹279'],['Cheesy Pasta','Popular choice','₹259']],'Health-oriented options':[['Wheat Pasta','Wheat pasta option','₹269']]};h=`<div class="title">Recommendations</div><div class="muted" style="font-size:12px;margin-top:5px">Organized into clear categories</div><div class="controls" style="justify-content:flex-start;margin-top:14px">${Object.keys(groups).map(k=>`<button class="tab ${category===k?'active':''}" data-category="${k}">${k}</button>`).join('')}</div><div class="section">${category}</div>${groups[category].map(card).join('')}`}
+if(current==='cart')h=`<div class="title">Your cart</div><div class="card row"><div class="foodpic">🍝</div><div class="grow"><b>White Sauce Pasta</b><div class="muted" style="font-size:12px">Penne • Quantity: 1</div></div><b>₹249</b></div><div class="section">Available offer</div>${!removed?`<div class="card" style="border-color:#e9aeb3"><b style="font-size:14px">Kotak League credit card offer</b><p class="muted" style="font-size:12px;line-height:1.5">Review the offer and choose whether you want to apply it.</p><div class="controls" style="justify-content:flex-start">${!offer?'<button class="primary" id="opt">Opt in to offer</button>':'<b style="color:#16834b;padding:9px 0">✓ Offer selected</b>'}<button class="secondary" id="remove">Remove</button></div></div>`:'<div class="card muted" style="font-size:13px">Offer removed from your cart.</div>'}<div class="section">Discounts and pricing</div><div class="card"><div class="row" style="justify-content:space-between;padding:7px 0"><span class="muted">Item total</span><b>₹249</b></div><div class="row" style="justify-content:space-between;padding:7px 0"><span class="muted">Offer discount</span><b>${offer&&!removed?'Applied':'—'}</b></div><hr style="border:0;border-top:1px solid #e0e3e8"><div class="row" style="justify-content:space-between;padding:7px 0"><b>To pay</b><b>₹249</b></div></div>`;
+if(current==='help')h=`<div class="title">Explore</div><div class="muted" style="font-size:12px">Browse the list</div>${['Your orders','Dining','Account'].map(x=>`<div class="card row" style="justify-content:space-between"><b style="font-size:13px">${x}</b><span class="muted">›</span></div>`).join('')}<div class="section">Help &amp; Support</div><div class="muted" style="font-size:12px">Choose a support option</div>${[['FAQs','Find answers to common questions'],['Chatbot','Get help through chat'],['Call','Speak to support']].map(([a,b])=>`<button class="card" data-help="${a}" style="width:100%;text-align:left"><b style="font-size:14px">${a}</b><div class="muted" style="font-size:12px;margin-top:4px">${b}</div></button>`).join('')}${helpChoice?`<div class="notice">Selected: ${helpChoice}. This is a demonstration of the support option.</div>`:''}<div class="notice">Help is placed at the end of the list and uses a clear label.</div>`;
+screen.innerHTML=h;
+screen.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>{category=b.dataset.category;draw()});
+screen.querySelectorAll('.add').forEach(b=>b.onclick=()=>{status.textContent='Item added to cart (prototype demonstration).';go('cart')});
+let o=document.getElementById('opt'),r=document.getElementById('remove');if(o)o.onclick=()=>{offer=true;removed=false;status.textContent='You opted in to the offer.';draw()};if(r)r.onclick=()=>{removed=true;offer=false;status.textContent='Offer removed. Your cart is unchanged.';draw()};
+screen.querySelectorAll('[data-help]').forEach(b=>b.onclick=()=>{helpChoice=b.dataset.help;draw()});
+}
+document.querySelectorAll('[data-screen]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.screen)));
+document.getElementById('reset').onclick=()=>{offer=false;removed=false;category='Top Rated';helpChoice='';status.textContent='Prototype reset.';go('home')};
+draw();
+})();
+</script></body></html>
